@@ -8,18 +8,17 @@ import * as FlightBookingActions from './flight-booking.actions';
 @Injectable()
 export class FlightBookingEffects {
 
-  loadFlightBookings$ = createEffect(() => {
-    return this.actions$.pipe( 
+  /* loadFlightBookings$ = createEffect(() => {
+    return this.actions$.pipe(
 
       ofType(FlightBookingActions.loadFlightBookings),
       concatMap(() =>
-        /** An EMPTY observable only emits completion. Replace with your own observable API request */
         EMPTY.pipe(
           map(data => FlightBookingActions.loadFlightBookingsSuccess({ data })),
           catchError(error => of(FlightBookingActions.loadFlightBookingsFailure({ error }))))
       )
     );
-  });
+  }); */
 
 
   constructor(private actions$: Actions) {}
