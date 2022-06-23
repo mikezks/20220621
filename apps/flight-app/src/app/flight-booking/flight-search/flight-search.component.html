@@ -46,12 +46,12 @@
     </div>
   </div>
 
-  <div *ngIf="selectFilters$ | async as filters" class="card">
+<!--   <div *ngIf="selectFilters$ | async as filters" class="card">
     <div class="content">
       <pre>Previous searches:
 {{ filters.slice().reverse() | json }}</pre>
     </div>
-  </div>
+  </div> -->
 
   <div class="row">
     <div *ngFor="let f of flights">
