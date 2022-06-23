@@ -1,10 +1,10 @@
 import { FlightCancellingModule } from './flight-booking/flight-cancelling/flight-cancelling.module';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
-import { FlightLibModule } from '@flight-workspace/flight-lib';
+import { FlightLibModule, FlightService } from '@flight-workspace/flight-lib';
 
 import { AppComponent } from './app.component';
 import { APP_ROUTES } from './app.routes';
@@ -48,7 +48,18 @@ import { environment } from '../environments/environment';
     HomeComponent,
     BasketComponent
   ],
-  providers: [],
+  providers: [
+    /* {
+      provide: FlightService,
+      useFactory: (http: HttpClient, config: ConfigService) => {
+        if (config.state === 'flight') {
+          return new FlightService(http);
+        }
+        return {} as FlightService;
+      },
+      deps: [HttpClient, ConfigService]
+    } */
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule {}
