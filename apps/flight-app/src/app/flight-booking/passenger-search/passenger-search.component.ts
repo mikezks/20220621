@@ -64,7 +64,7 @@ export class RxConnector implements OnDestroy {
 })
 export class PassengerSearchComponent {
   stream$ = fromEvent(document, 'click').pipe(
-    firstLastTime(3_000, { log: 'full' })
+    firstLastTime(3_000, { log: 'full', debounceTime: 300 })
   );
 
   constructor(private rx: RxConnector) {
