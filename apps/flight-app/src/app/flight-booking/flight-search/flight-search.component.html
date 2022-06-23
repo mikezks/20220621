@@ -26,7 +26,7 @@
         </div>
 
         <div class="form-group">
-          <button (click)="search()" [disabled]="!from || !to"
+          <button (click)="searchFlights()" [disabled]="!from || !to"
             class="btn btn-default">
             Search
           </button>
@@ -43,6 +43,13 @@
         </div>
       </form>
 
+    </div>
+  </div>
+
+  <div *ngIf="selectFilters$ | async as filters" class="card">
+    <div class="content">
+      <pre>Previous searches:
+{{ filters.slice().reverse() | json }}</pre>
     </div>
   </div>
 

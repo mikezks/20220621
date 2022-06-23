@@ -1,19 +1,38 @@
 import { Component, OnInit } from '@angular/core';
 import { Flight } from '@flight-workspace/flight-lib';
+import { ComponentStore } from '@ngrx/component-store';
 import { Store } from '@ngrx/store';
+import { Observable, of, tap } from 'rxjs';
 import * as fromFlightBooking from '../+state';
+
+
+interface Filter {
+  from: string;
+  to: string;
+  urgent: boolean;
+}
+
+interface LocalState {
+  filters: Filter[];
+}
+
+const initialLocalState: LocalState = {
+  filters: []
+};
+
 
 @Component({
   selector: 'flight-search',
   templateUrl: './flight-search.component.html',
-  styleUrls: ['./flight-search.component.css']
+  styleUrls: ['./flight-search.component.css'],
+  providers: [ComponentStore]
 })
 export class FlightSearchComponent implements OnInit {
 
   from = 'Hamburg'; // in Germany
   to = 'Graz'; // in Austria
   urgent = false;
-  flights$ = this.store.select(fromFlightBooking.selectActiveUserFlights);
+  flights$ = this.globalStore.select(fromFlightBooking.selectFlights);
 
   // "shopping basket" with selected flights
   basket: { [id: number]: boolean } = {
@@ -21,27 +40,64 @@ export class FlightSearchComponent implements OnInit {
     5: true
   };
 
-  constructor(private store: Store) {
+  /**
+   * Updater
+   */
+
+  addFilter = this.localStore.updater(
+    (state, filter: Filter) => ({
+      ...state,
+      filters: [
+        ...state.filters,
+        filter
+      ]
+    })
+  );
+
+  /**
+   * Selectors
+   */
+
+  selectFilters$ = this.localStore.select(
+    // Selectors
+    // Projector
+    state => state.filters
+  );
+
+  /**
+   * Effects
+   */
+
+  searchFlights = this.localStore.effect(
+    (trigger$: Observable<void>) => trigger$.pipe(
+      tap(() => this.addFilter(of({
+        from: this.from,
+        to: this.to,
+        urgent: this.urgent
+      }))),
+      tap(() => this.globalStore.dispatch(
+        fromFlightBooking.flightsLoad({
+          from: this.from,
+          to: this.to,
+          urgent: this.urgent
+        })
+      ))
+    )
+  );
+
+  constructor(
+    private globalStore: Store,
+    private localStore: ComponentStore<LocalState>) {
+
+    this.localStore.setState(initialLocalState);
   }
 
   ngOnInit() {
     console.log('ngOnInit');
   }
 
-  search(): void {
-    if (!this.from || !this.to) return;
-
-    this.store.dispatch(
-      fromFlightBooking.flightsLoad({
-        from: this.from,
-        to: this.to,
-        urgent: this.urgent
-      })
-    );
-  }
-
   delay(flight: Flight): void {
-    this.store.dispatch(
+    this.globalStore.dispatch(
       fromFlightBooking.flightUpdate({
         flight: {
           ...flight,
